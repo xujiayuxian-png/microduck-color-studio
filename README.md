@@ -1,12 +1,44 @@
-# Micro Duck Color Studio
+<p align="center"><img src="dist/assets/favicon.svg" width="72" height="72" alt="Micro Duck icon"></p>
 
-**Explore colors, gradients, and materials on the real Micro Duck — one part at a time.**
+<h1 align="center">Micro Duck Color Studio</h1>
 
-[简体中文](README.zh-CN.md) · [Model attribution](dist/assets/ATTRIBUTION.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+<p align="center"><strong>A little duck. Endless possibilities.</strong><br>
+Explore colors, gradients, and materials on the real Micro Duck, one part at a time.</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/parts-70-355E4B?style=flat-square" alt="70 assembly parts">
+  <img src="https://img.shields.io/badge/paint_modes-5-9B72CF?style=flat-square" alt="5 paint modes">
+  <img src="https://img.shields.io/badge/materials-12-C69C6D?style=flat-square" alt="12 materials">
+  <img src="https://img.shields.io/badge/build_step-none-708E63?style=flat-square" alt="No build step">
+</p>
+
+<p align="center">
+  <a href="https://microduck-color-lab-jx.hollowechidna8.chatgpt.site/">🚀 Try it live</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="#-quick-start">Run locally</a> ·
+  <a href="THIRD_PARTY_NOTICES.md">Attribution & licenses</a>
+</p>
+
+![Micro Duck editor with the original green-and-white scheme, independent part list, color picker, and twelve preset thumbnails](docs/images/studio-overview.jpg)
+
+<p align="center"><em>Pick a part. Find your color. Make it yours.</em></p>
 
 A browser-based design playground built from Pollen Robotics’ official Microduck geometry and assembly descriptions. Try a practical filament palette, invent a new finish, and compare your favorite combinations before printing.
 
-## Features
+## 📸 A closer look
+
+<details>
+<summary><strong>🌈 Gradients meet materials: Aurora + pearl ceramic</strong></summary>
+
+![Aurora gradient scheme on the real Micro Duck with the material library and roughness, metalness, clearcoat, and texture controls](docs/images/studio-materials.jpg)
+
+The same parts, a completely different personality. Mix gradient colors with a surface finish, then adjust the details.
+
+</details>
+
+Screenshots captured from the live application on 2026-11-12 using its **24-view compatibility renderer**. These are real UI captures, not mockups; WebGL material appearance may differ. Robot geometry and derived views © [Pollen Robotics](https://github.com/pollen-robotics/microduck_rl), [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). See [screenshot provenance](docs/images/README.md).
+
+## ✨ Features
 
 - **Independent parts.** Customize 70 assembly instances, with 35 printable parts shown by default. The face, upper and lower head shells, eyes, hip connectors, left and right feet, and sole plates remain separately editable. Search by part name or STL filename.
 - **Any color you like.** Start with 40 standard CSS/sRGB colors, use the HSV palette or native color picker, or enter a HEX value. A filament tab keeps white, green, lemon yellow, blue, red, and gray close at hand.
@@ -16,7 +48,7 @@ A browser-based design playground built from Pollen Robotics’ official Microdu
 - **Compare and keep ideas.** Explore 12 presets, save up to eight local favorites, compare schemes side by side, undo/redo, and export a PNG appearance sheet or a complete JSON configuration.
 - **Two preview paths.** WebGL2 renders physical materials. A compatibility renderer uses 24 views generated from the same geometry and supports per-part colors, gradients, and procedural textures.
 
-## Quick start
+## 🚀 Quick start
 
 Clone the repository and serve the static app with Python 3:
 
@@ -30,7 +62,7 @@ Open **http://127.0.0.1:8080/** in your browser. No frontend dependency installa
 
 The complete static application is in `dist/`. Serve that directory over HTTP rather than opening `index.html` as a local file.
 
-## A simple workflow
+## 🎨 A simple workflow
 
 1. Choose a preset or start with your available filaments.
 2. Select a part from the model or part list. Enable multi-selection or create a group when several parts should share a finish.
@@ -40,13 +72,13 @@ The complete static application is in `dist/`. Serve that directory over HTTP ra
 
 Configurations, groups, and favorites are stored in the current browser’s LocalStorage. Export JSON to transfer a scheme to another browser or device. There is no application backend or account system.
 
-## Preview limitations
+## 🔎 Preview limitations
 
 This is an appearance planning tool. Gradients and material finishes do not generate slicer settings, toolpaths, or manufacturing instructions. Actual results depend on filament, lighting, print settings, and post-processing.
 
 The compatibility renderer approximates glass and reflective materials. Some internal parts are hidden by the assembled structure but remain editable. The automated browser environment used for validation did not provide WebGL, so GPU material rendering has not been validated end to end. Native file-picker automation was also incomplete; JSON import processing is covered by unit tests.
 
-## Development and verification
+## 🧪 Development and verification
 
 JavaScript tests require **Node.js 20+**:
 
@@ -65,7 +97,7 @@ python -m unittest discover -s tests -p '*_test.py'
 
 The initial release passes **18 JavaScript tests and eight Python tests**. They cover independent part editing, configuration migration, gradient and texture sampling, group restoration, history isolation, geometry coordinates, and surface-map assets. Browser checks cover separate face/head colors, independent feet, gradients and materials, favorites, comparison, exports, undo, and mobile layout.
 
-## Project layout
+## 🗂️ Project layout
 
 | Path | Purpose |
 | --- | --- |
@@ -81,7 +113,7 @@ The initial release passes **18 JavaScript tests and eight Python tests**. They 
 | `reference/` | Assembly descriptions and asset-generation tools |
 | `tests/` | State, paint, geometry, and asset checks |
 
-## Model provenance and asset regeneration
+## 🦆 Model provenance and asset regeneration
 
 The robot geometry comes from [Pollen Robotics’ microduck_rl](https://github.com/pollen-robotics/microduck_rl), pinned to commit `0daab160d3fb1c2cbaba16a4a19052f36709dd9e`. The app assembles 38 geometry meshes into 70 addressable instances in the official standing pose. Source and conversion details are recorded in [`dist/assets/ATTRIBUTION.md`](dist/assets/ATTRIBUTION.md) and `dist/assets/duck.json`.
 
@@ -97,7 +129,7 @@ python tests/parts_assets_test.py
 
 See [`reference/RASTER_CHANNELS.md`](reference/RASTER_CHANNELS.md) for the map encoding. `reference/build_model.py` can fetch the pinned upstream STL assets and rebuild the geometry package; run the surface-map pipeline afterward to restore the part metadata and views.
 
-## Attribution and licensing
+## 📜 Attribution and licensing
 
 This is an independent project based on Microduck assets, with no claimed affiliation or endorsement from Pollen Robotics.
 

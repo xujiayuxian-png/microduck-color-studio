@@ -1,8 +1,43 @@
-# Micro Duck 自由配色与材质实验室
+<p align="center"><img src="dist/assets/favicon.svg" width="72" height="72" alt="Micro Duck 图标"></p>
+
+<h1 align="center">Micro Duck 自由配色与材质实验室</h1>
+
+<p align="center"><strong>每个零件，都有自己的个性。</strong><br>从一抹颜色到一种质感，把想象装进真实的 Micro Duck。</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/parts-70-355E4B?style=flat-square" alt="70 assembly parts">
+  <img src="https://img.shields.io/badge/paint_modes-5-9B72CF?style=flat-square" alt="5 paint modes">
+  <img src="https://img.shields.io/badge/materials-12-C69C6D?style=flat-square" alt="12 materials">
+  <img src="https://img.shields.io/badge/build_step-none-708E63?style=flat-square" alt="No build step">
+</p>
+
+<p align="center">
+  <a href="https://microduck-color-lab-jx.hollowechidna8.chatgpt.site/">🚀 在线体验</a> ·
+  <a href="README.md">English</a> ·
+  <a href="#-本地运行">本地运行</a> ·
+  <a href="THIRD_PARTY_NOTICES.md">来源与许可</a>
+</p>
+
+![Micro Duck 真实编辑界面：青柠小白配色、独立零件列表、自由调色盘与 12 组灵感预设](docs/images/studio-overview.jpg)
+
+<p align="center"><em>选中零件，找到颜色，做出属于你的那一只。</em></p>
 
 基于 Pollen Robotics 官方 Microduck 几何与装配描述的静态网页工具。可以给每个真实零件分别设置颜色、渐变与表面材质，再收藏、比较并导出搭配方案。
 
-## 功能
+## 📸 界面一览
+
+<details>
+<summary><strong>🌈 渐变 × 材质：极光流彩与珠光陶瓷</strong></summary>
+
+![极光流彩实际界面：真实模型的渐变配色、12 种材质与粗糙度、金属感、清漆光泽、纹理尺度控制](docs/images/studio-materials.jpg)
+
+同一组零件，也可以有完全不同的个性。渐变与表面材质自由叠加，再细调每一处质感。
+
+</details>
+
+截图于 2026-11-12 从实际运行的网页获取，使用 **24 视角兼容渲染器**，不是效果图；WebGL 材质外观可能有所不同。机器人几何及衍生视图 © [Pollen Robotics](https://github.com/pollen-robotics/microduck_rl)，遵循 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)。详见[截图来源说明](docs/images/README.md)。
+
+## ✨ 功能
 
 - **逐件编辑**：70 个独立装配件，默认显示 35 个打印件；脸部面板、头顶壳、头部下壳、左右脚、踝部和脚底板分别可调。可按名称或 STL 文件名搜索。
 - **自由选色**：40 种 CSS / sRGB 常用标准色、HSV 调色盘、系统取色器和任意 HEX 色值，同时保留白、绿、柠檬黄、蓝、红、灰六种耗材快捷选择。
@@ -12,7 +47,7 @@
 - **方案管理**：12 组灵感预设、8 个本地收藏、并排比较、撤销与重做、PNG 外观清单以及完整 JSON 方案导出／导入。
 - **兼容预览**：支持 WebGL2 时使用物理材质；无 WebGL 时使用同一真实几何生成的 24 视角表面图，仍支持逐件渐变与纹理编辑。
 
-## 本地运行
+## 🚀 本地运行
 
 不需要安装前端依赖，也不需要构建。使用 Python 3 从仓库根目录启动 HTTP 服务：
 
@@ -26,7 +61,7 @@ python3 -m http.server 8080 --bind 127.0.0.1 --directory dist
 
 颜色设置、自定义组合与收藏保存于当前浏览器的 LocalStorage，不上传服务器。可用 JSON 导出保存完整参数，换设备后重新导入。
 
-## 验证
+## 🧪 验证
 
 JavaScript 测试需要 Node.js 20 或更新版本：
 
@@ -47,7 +82,7 @@ python -m unittest discover -s tests -p '*_test.py'
 
 浏览器实测包括脸／头壳异色、左右脚独立配色、渐变叠加珠光、组合材质修改、收藏比较与恢复、PNG／JSON 导出、调色盘和撤销，以及手机宽度布局。测试环境未启用 WebGL，因此实际 GPU 材质渲染未完成端到端验证；原生文件选择器的自动化测试也未完成，导入数据处理逻辑已有单元测试。
 
-## 项目结构
+## 🗂️ 项目结构
 
 | 路径 | 内容 |
 | --- | --- |
@@ -64,7 +99,7 @@ python -m unittest discover -s tests -p '*_test.py'
 | `reference/` | 官方装配 XML、模型转换和 CPU 表面图生成脚本 |
 | `tests/` | 状态、采样、几何和资源测试 |
 
-## 模型来源与重新生成
+## 🦆 模型来源与重新生成
 
 模型来源为 [Pollen Robotics microduck_rl](https://github.com/pollen-robotics/microduck_rl)，精确提交与转换信息在 `dist/assets/duck.json` 和 `dist/assets/ATTRIBUTION.md` 中记录。38 个几何网格按官方站立姿态装配为 70 个独立可寻址零件，未重新设计机器人外形。
 
@@ -80,7 +115,7 @@ python tests/parts_assets_test.py
 
 表面图编码详见 `reference/RASTER_CHANNELS.md`。`reference/build_model.py` 可从固定的官方源提交重新获取 STL 并转换几何包；之后需要继续执行上述流程，恢复独立零件元数据和表面图。生成中间文件与缓存不纳入版本控制。
 
-## 材质与版权说明
+## 📜 材质与版权说明
 
 渐变、纹理和材质是外观设计预览，实际成品取决于耗材、打印方式与后处理。兼容预览中的玻璃、金属反射属于近似效果。少数内部零件被装配结构遮挡，但仍可单独设置。
 
