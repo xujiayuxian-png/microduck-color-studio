@@ -1,0 +1,22 @@
+# Local dependencies and caches
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+
+# Local settings, credentials and hosting identity
+.env
+.env.*
+.openai/
+
+# Regenerable model-conversion intermediates
+reference/stl/
+reference/*.bin
+reference/*.rgba
+reference/*.png
+reference/raster
+*.tar.gz
+*.tgz

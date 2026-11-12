@@ -4,8 +4,6 @@
 
 [简体中文](README.zh-CN.md) · [Model attribution](dist/assets/ATTRIBUTION.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
-![Micro Duck color and material studio](docs/preview.png)
-
 A browser-based design playground built from Pollen Robotics’ official Microduck geometry and assembly descriptions. Try a practical filament palette, invent a new finish, and compare your favorite combinations before printing.
 
 ## Features

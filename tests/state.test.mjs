@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {sanitize,changeColor,PRESETS,PARTS} from '../dist/state.mjs';
+test('changing a single printable part preserves the other five colors',()=>{const before=PRESETS[0].colors;const after=changeColor(before,'eyes','blue');assert.equal(after.eyes,'blue');for(const p of PARTS) if(p.id!=='eyes') assert.equal(after[p.id],before[p.id]);assert.notEqual(before.eyes,'blue');});
+test('stored invalid and incomplete combinations fall back to available spool colors',()=>{const s=sanitize({body:'invalid',eyes:'red',soles:null});assert.equal(s.eyes,'red');assert.equal(s.body,'white');assert.equal(s.soles,'white');});
+test('each coordinated preset supplies all six parts using only existing spools',()=>{for(const p of PRESETS){assert.equal(Object.keys(p.colors).length,6);assert.deepEqual(sanitize(p.colors),p.colors);}});
+import * as state from '../dist/state.mjs';
+test('dragging across multiple complete revolutions always resolves an existing view',()=>{for(const [input,expected] of [[-1,23],[-25,23],[-49,23],[24,0],[75,3]]) assert.equal(state.wrapFrame?.(input),expected);});
+test('malformed stored favorite IDs remain uniquely restorable and deletable',()=>{const raw=[{name:'A',id:'current'},{name:'B',id:12},{name:'C'},{name:'D',id:'current'}];const clean=state.hydrateSaved?.(raw);assert.ok(clean,'Stored saves must be repairable');assert.equal(clean.length,4);assert.equal(new Set(clean.map(x=>x.id)).size,4);for(const x of clean){assert.equal(typeof x.id,'string');assert.notEqual(x.id,'current');assert.match(x.id,/^[a-zA-Z0-9_-]+$/);assert.deepEqual(x.colors,PRESETS[0].colors);}});
+test('unsafe stored image strings cannot become markup',()=>{const clean=state.hydrateSaved?.([{name:'  My duck  ',id:'safe',image:'data:image/png;base64,\" onerror=\"alert(1)'}]);assert.ok(clean);assert.equal(clean[0].image,'');assert.equal(clean[0].name,'My duck');});

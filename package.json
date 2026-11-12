@@ -1,0 +1,14 @@
+{
+  "name": "microduck-color-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Real Microduck part-by-part color, gradient and material studio",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "python3 -m http.server 8080 --bind 127.0.0.1 --directory dist",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
