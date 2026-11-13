@@ -9,6 +9,7 @@ export async function createFallbackViewer(container,onSelect,parts){
  const canvas=document.createElement('canvas');canvas.setAttribute('aria-label','逐件渐变与材质的真实模型多视角预览');container.prepend(canvas);const ctx=canvas.getContext('2d');
  const response=await fetch('./assets/duck.json?v=2');if(!response.ok)throw Error('模型表面信息加载失败');const manifest=await response.json(),bounds=manifest.surfaceBounds;
  const cache=new Map(),pendingFrames=new Map(),byIndex=Object.fromEntries(parts.map(p=>[p.index,p]));
+ let reference=false;
  let frame=3,config={},selected=[],zoom=1,width=1,height=1,auto=null,version=0,request=0,rendered;
  const light=unit([.6,.9,.7]),out=[0,0,0];
  async function imageData(url){const image=new Image();image.src=url;await image.decode();const temp=document.createElement('canvas');temp.width=temp.height=W;const c=temp.getContext('2d',{willReadFrequently:true});c.drawImage(image,0,0);return c.getImageData(0,0,W,W).data;}
@@ -22,17 +23,17 @@ export async function createFallbackViewer(container,onSelect,parts){
   for(let k=0;k<mask.length;k+=4){if(!mask[k+3])continue;const id=mask[k+1],a=compiled[id];if(!a)continue;
    const x=Math.max(0,Math.min(1,pos[k]*a.factor[0]+a.offset[0])),y=Math.max(0,Math.min(1,pos[k+1]*a.factor[1]+a.offset[1])),z=Math.max(0,Math.min(1,pos[k+2]*a.factor[2]+a.offset[2]));sampleCompiled(a,x,y,z,out);
    let nx=normals[k]/127.5-1,ny=normals[k+1]/127.5-1,nz=normals[k+2]/127.5-1;const nl=Math.hypot(nx,ny,nz)||1;nx/=nl;ny/=nl;nz/=nl;
-   const ao=mask[k+2]/255,shade=mask[k]/170*ao,ndv=Math.abs(nx*view[0]+ny*view[1]+nz*view[2]);const spec=Math.pow(Math.max(0,nx*half[0]+ny*half[1]+nz*half[2]),a.specPower)*(1-a.roughness*.75);
+   const ao=mask[k+2]/255,shade=Math.min(1.12,mask[k]/210)*ao,ndv=Math.abs(nx*view[0]+ny*view[1]+nz*view[2]);const spec=Math.pow(Math.max(0,nx*half[0]+ny*half[1]+nz*half[2]),a.specPower)*(1-a.roughness*.75);
    let diffuse=shade*(1-a.metalness*.35)+a.metalness*(.15+.25*Math.abs(ny)+.12*Math.sin(nz*10+nx*7+theta));
    const sheen=a.matIndex===2?(1-ndv)**2*.2:0;
    for(let channel=0;channel<3;channel++){
     const base=lin[Math.max(0,Math.min(255,Math.round(out[channel]*255)))];let value=base*(diffuse+sheen)+spec*(.06*(1-a.metalness)+base*a.metalness)*2.5+spec*a.clearcoat*.18;
     if(a.matIndex===5)value+=.045*(1-ndv)*(1+Math.sin((ny+nz)*7+channel*2))*base;
-    if(a.matIndex===11){const bg=[.865,.885,.82][channel],fresnel=(1-ndv)**3;value=bg*(.48-.25*fresnel)+base*(.28+.5*fresnel)+spec*.65;}
-    output[k+channel]=srgb(value);
+    if(a.matIndex===11){const bg=[.86,.86,.86][channel],fresnel=(1-ndv)**3;value=bg*(.48-.25*fresnel)+base*(.28+.5*fresnel)+spec*.65;}
+    output[k+channel]=reference?Math.round(out[channel]*255):srgb(value);
    }
    output[k+3]=255;
-   if(highlight&&marked.has(id)){const pixel=k/4,px=pixel%W;if(px>0&&px<W-1&&(mask[k-3]!==id||mask[k+5]!==id||mask[k-W*4+1]!==id||mask[k+W*4+1]!==id)){output[k]=output[k]*.5+65;output[k+1]=output[k+1]*.5+83;output[k+2]=output[k+2]*.5+49;}}
+   if(!reference&&highlight&&marked.has(id)){const pixel=k/4,px=pixel%W;if(px>0&&px<W-1&&(mask[k-3]!==id||mask[k+5]!==id||mask[k-W*4+1]!==id||mask[k+W*4+1]!==id)){output[k]=output[k]*.5+65;output[k+1]=output[k+1]*.5+83;output[k+2]=output[k+2]*.5+49;}}
   }
   const image=document.createElement('canvas');image.width=image.height=W;image.getContext('2d').putImageData(result,0,0);return image;
  }
@@ -49,5 +50,5 @@ export async function createFallbackViewer(container,onSelect,parts){
  canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.7,Math.min(1.7,zoom-e.deltaY*.001));draw(false)},{passive:false});
  document.querySelector('.model-tag').textContent='真实模型 · 24 个视角';document.querySelector('.drag-hint').textContent='拖动切换视角 · 滚轮缩放 · 点击选件';
  for(const n of [0,6,12,2,4])load(n).catch(()=>{});
- return {ready:true,mode:'multiview',setConfig(value){if(config!==value){config=value;version++;draw()}},select(ids){if(selected.join()!==ids.join()){selected=[...ids];if(Object.keys(config).length)draw()}},view(name){stop();zoom=1;show(({hero:3,front:0,side:6,back:12})[name]??3)},rotate(){if(auto){stop();return false}auto=setInterval(()=>show(frame+1),300);return true},snapshot(value=config,w=700,h=600){const image=colorize(3,value,false),target=document.createElement('canvas');target.width=w;target.height=h;paint(target.getContext('2d'),w,h,image,1);return target.toDataURL('image/png')}};
+ return {ready:true,mode:'multiview',setReference(enabled){reference=enabled;draw()},setConfig(value){if(config!==value){config=value;version++;draw()}},select(ids){if(selected.join()!==ids.join()){selected=[...ids];if(Object.keys(config).length)draw()}},view(name){stop();zoom=1;show(({hero:3,front:0,side:6,back:12})[name]??3)},rotate(){if(auto){stop();return false}auto=setInterval(()=>show(frame+1),300);return true},snapshot(value=config,w=700,h=600){const before=reference;reference=false;try{const image=colorize(3,value,false),target=document.createElement('canvas');target.width=w;target.height=h;paint(target.getContext('2d'),w,h,image,1);return target.toDataURL('image/png')}finally{reference=before}}};
 }

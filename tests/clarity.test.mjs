@@ -1,0 +1,6 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {buildPresets,filterPresets} from '../dist/studio-state.mjs';
+const parts=JSON.parse(fs.readFileSync(new URL('../dist/assets/parts.json',import.meta.url)));
+test('at least twenty distinct references preserve existing presets and cover all surface materials',()=>{const p=buildPresets(parts);assert.ok(p.length>=20);assert.equal(p[0].name,'青柠小白');assert.equal(new Set(p.map(x=>JSON.stringify(x.config))).size,p.length);const mats=new Set(p.flatMap(x=>Object.values(x.config).map(a=>a.material)));for(const key of ['glass','clay','frost','wood','metal','silk','carbon'])assert.ok(mats.has(key),key)});
+test('reference filtering retains stable ids and returns only matching material schemes',()=>{const p=buildPresets(parts);assert.deepEqual(filterPresets(p,'all'),p);const q=filterPresets(p,'glass');assert.ok(q.length);assert.ok(q.every(x=>Object.values(x.config).some(a=>a.material==='glass')));assert.deepEqual(filterPresets(p,'missing'),[])});
+test('metal filtering ignores metal bearings present in every assembly',()=>{const p=buildPresets(parts);assert.ok(!filterPresets(p,'metal').some(x=>x.id==='preset-0'));assert.ok(filterPresets(p,'metal').some(x=>x.name==='午夜钛金'))});

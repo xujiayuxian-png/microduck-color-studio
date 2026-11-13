@@ -1,9 +1,10 @@
-import {STANDARD_COLORS,SPOOL_COLORS,MATERIALS,PAINTS,SECTIONS,normalizeHex,sanitizeAppearance,defaultConfig,patchSelected,cloneConfig,hydrateStudio,appearanceCSS,styleLabel,buildPresets,snapshotStudio,restoreStudioSnapshot,importStudioDocument} from './studio-state.mjs';
+import {filterPresets,STANDARD_COLORS,SPOOL_COLORS,MATERIALS,PAINTS,SECTIONS,normalizeHex,sanitizeAppearance,defaultConfig,patchSelected,cloneConfig,hydrateStudio,appearanceCSS,styleLabel,buildPresets,snapshotStudio,restoreStudioSnapshot,importStudioDocument} from './studio-state.mjs';
 import {createViewer} from './viewer-v2.mjs';
 import {createFallbackViewer} from './fallback-v2.mjs';
 const $=selector=>document.querySelector(selector);
 const STORAGE='microduck-color-studio-v2';
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let presetImages=new Map(),presetFilter='all';
 let parts=[],partById={},config={},saved=[],groups=[],presets=[],viewer;
 let selected=new Set(['p043']),palette='standard',activeColor='color',dialogPurpose='save',copied=null;
 let undoStack=[],redoStack=[],editStart=null,currentPreset='preset-0',persistTimer,toastTimer,hue=100;
@@ -62,9 +63,14 @@ function rgbToHSV(hex){let [r,g,b]=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/
 function hsvToHex(h,s,v){const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;const [r,g,b]=h<60?[c,x,0]:h<120?[x,c,0]:h<180?[0,c,x]:h<240?[0,x,c]:h<300?[x,0,c]:[c,0,x];return '#'+[r,g,b].map(n=>Math.round((n+m)*255).toString(16).padStart(2,'0')).join('')}
 function syncPicker(){const hsv=rgbToHSV(firstAppearance()[activeColor]);hue=hsv.h;$('#hue-slider').value=Math.round(hue);$('#sv-picker').style.backgroundColor=`hsl(${hue} 100% 50%)`;$('#sv-cursor').style.left=`${hsv.s*100}%`;$('#sv-cursor').style.top=`${(1-hsv.v)*100}%`;$('#sv-picker').setAttribute('aria-valuenow',String(Math.round(hsv.s*100)));$('#sv-picker').setAttribute('aria-valuetext',`${firstAppearance()[activeColor]}，饱和度 ${Math.round(hsv.s*100)}%，明度 ${Math.round(hsv.v*100)}%`)}
 function renderPresets(){
- $('#presets').innerHTML=presets.map(p=>{const dots=[...new Set(parts.filter(x=>!x.hardware).map(x=>p.config[x.id].color))].slice(0,4);return `<button class="preset" data-preset="${p.id}" title="应用${p.name}完整方案"><div class="preset-image"><div class="preset-placeholder" style="background:${appearanceCSS(p.config.p043)}"></div><span class="preset-tag">${p.tag}</span></div><div class="preset-bottom"><span>${p.name}</span><span class="preset-colors">${dots.map(hex=>`<span style="background:${hex}"></span>`).join('')}</span></div></button>`}).join('');
+ const shown=filterPresets(presets,presetFilter);$('.presets-count').textContent=`${shown.length} / ${presets.length} 个灵感方案`;
+ $('#presets').innerHTML=shown.map(p=>{const dots=[...new Set(parts.filter(x=>!x.hardware).map(x=>p.config[x.id].color))].slice(0,4);return `<button class="preset" data-preset="${p.id}" title="应用${p.name}完整方案"><div class="preset-image">${presetImages.has(p.id)?`<img src="${presetImages.get(p.id)}" alt="${esc(p.name)}配色与材质预览">`:`<div class="preset-placeholder" style="background:${appearanceCSS(p.config.p043)}"></div>`}<span class="preset-tag">${p.tag}</span></div><div class="preset-bottom"><span>${p.name}</span><span class="preset-colors">${dots.map(hex=>`<span style="background:${hex}"></span>`).join('')}</span></div></button>`}).join('');
 }
 function setupControls(){
+ $('#preset-filter').insertAdjacentHTML('beforeend',Object.entries(MATERIALS).map(([id,m])=>`<option value="${id}">${m.name}</option>`).join(''));
+ $('#preset-filter').onchange=()=>{presetFilter=$('#preset-filter').value;renderPresets();syncUI()};
+ $('#reference-mode').onchange=()=>{const enabled=$('#reference-mode').checked;viewer?.setReference(enabled);$('#lighting-note').textContent=enabled?'原色核对 · 关闭光照与反射，保留颜色及纹理':'中性工作室光 · 无滤镜色调映射'};
+
  $('#paint-options').innerHTML=Object.entries(PAINTS).map(([id,name])=>`<button class="paint-option" data-paint="${id}" aria-pressed="false">${name}</button>`).join('');
  $('#material-options').innerHTML=Object.entries(MATERIALS).map(([id,m])=>`<button class="material-option" data-material="${id}" aria-pressed="false"><i class="material-orb" style="background:${m.preview}"></i><span>${m.name}</span></button>`).join('');
  $('#part-tree').addEventListener('click',e=>{const btn=e.target.closest('[data-select]');if(btn)choosePart(btn.dataset.select,{additive:e.ctrlKey||e.metaKey||e.shiftKey})});
@@ -109,7 +115,7 @@ function showGroups(){
 function showCompare(){
  if(!viewer)return toast('模型正在加载，请稍等');finishEdit();
  const items=[{id:'current',name:'当前方案',config:cloneConfig(config),image:viewer.snapshot(config,500,430)},...saved];
- $('#compare-grid').innerHTML=items.map(s=>{const styled=parts.filter(p=>!p.hardware);const mats=new Set(styled.map(p=>s.config[p.id].material));const gradients=styled.filter(p=>s.config[p.id].paint!=='solid').length;return `<article class="saved-card"><img src="${s.image||viewer.snapshot(s.config,500,430)}" alt="${esc(s.name)}的完整外观预览"><div class="saved-card-body"><h3>${esc(s.name)}${s.id==='current'?'<span class="current-label">编辑中</span>':''}</h3><div class="saved-info">${mats.size} 种材质 · ${gradients} 个渐变零件</div><div class="saved-mapping">${styled.map(p=>`<div><span><i style="background:${appearanceCSS(s.config[p.id])}"></i>${esc(p.name)}</span><small>${MATERIALS[s.config[p.id].material].name}</small></div>`).join('')}</div>${s.id==='current'?'':`<div class="saved-card-actions"><button class="btn outline" data-restore="${s.id}">应用完整外观</button><button class="text-btn" data-delete="${s.id}">删除</button></div>`}</div></article>`}).join('');
+ $('#compare-grid').innerHTML=items.map(s=>{const styled=parts.filter(p=>!p.hardware);const mats=new Set(styled.map(p=>s.config[p.id].material));const gradients=styled.filter(p=>s.config[p.id].paint!=='solid').length;return `<article class="saved-card"><img src="${viewer.snapshot(s.config,500,430)}" alt="${esc(s.name)}的完整外观预览"><div class="saved-card-body"><h3>${esc(s.name)}${s.id==='current'?'<span class="current-label">编辑中</span>':''}</h3><div class="saved-info">${mats.size} 种材质 · ${gradients} 个渐变零件</div><div class="saved-mapping">${styled.map(p=>`<div><span><i style="background:${appearanceCSS(s.config[p.id])}"></i>${esc(p.name)}</span><small>${MATERIALS[s.config[p.id].material].name}</small></div>`).join('')}</div>${s.id==='current'?'':`<div class="saved-card-actions"><button class="btn outline" data-restore="${s.id}">应用完整外观</button><button class="text-btn" data-delete="${s.id}">删除</button></div>`}</div></article>`}).join('');
  if(!saved.length)$('#compare-grid').insertAdjacentHTML('beforeend','<div class="empty-message">先收藏几种颜色与材质的组合，<br>再把它们放在一起比较。</div>');if(!$('#compare-dialog').open)$('#compare-dialog').showModal();
 }
 function download(blob,filename){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),15000)}
@@ -131,8 +137,8 @@ async function init(){try{
  ({config,saved,groups}=hydrateStudio(data,parts));presets=buildPresets(parts);if(JSON.stringify(config)!==JSON.stringify(presets[0].config))currentPreset='';setupControls();renderPalette();renderGroups();renderTree();renderPresets();syncUI();
  const onSelect=(id,options={})=>{if(partById[id]?.hardware)$('#show-hardware').checked=true;$('#part-search').value='';choosePart(id,options)};
  try{viewer=await createViewer($('#viewport'),onSelect,parts)}catch(error){if(!/WebGL|context|DecompressionStream/i.test(String(error)))throw error;$('#viewport canvas')?.remove();viewer=await createFallbackViewer($('#viewport'),onSelect,parts)}
- syncUI();$('#load-overlay')?.remove();document.body.dataset.ready='true';persist();
+ syncUI();viewer.setReference($('#reference-mode').checked);$('#load-overlay')?.remove();document.body.dataset.ready='true';persist();
  if(viewer.mode==='multiview'){$('#view-mode').textContent='多视角预览';$('#render-note').textContent='兼容预览保留渐变与纹理；玻璃与金属反射为近似效果。'}
- for(const p of presets){try{const image=document.createElement('img');image.alt=`${p.name}配色与材质的真实模型`;image.src=viewer.snapshot(p.config,420,300);$(`[data-preset="${p.id}"] .preset-placeholder`)?.replaceWith(image);await new Promise(r=>setTimeout(r,20))}catch{}}
+ for(const p of presets){try{const image=document.createElement('img');image.alt=`${p.name}配色与材质的真实模型`;image.src=viewer.snapshot(p.config,420,300);presetImages.set(p.id,image.src);$(`[data-preset="${p.id}"] .preset-placeholder`)?.replaceWith(image);await new Promise(r=>setTimeout(r,20))}catch{}}
  }catch(error){console.error(error);const overlay=$('#load-overlay');if(overlay){overlay.innerHTML='<strong>暂时未能装配模型</strong><span>请检查网络后重新加载。</span><button class="btn outline" id="retry-model">重新加载</button>';$('#retry-model').onclick=()=>location.reload()}else toast('部分预览未能加载，请刷新后重试。')}}
 init();

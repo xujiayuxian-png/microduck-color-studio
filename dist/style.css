@@ -7,3 +7,12 @@
 @media(min-width:931px){.studio{height:710px}.viewer-shell{min-height:0}.part-tree,.inspector-scroll{height:auto;max-height:none;min-height:0;flex:1}}
 @media(min-width:1550px){.studio{height:785px}}
 @media(min-width:931px){.studio{grid-template-rows:minmax(0,1fr)}.parts-panel,.viewer-column,.inspector{min-height:0;overflow:hidden}}
+
+/* Neutral viewing booth: the surrounding UI must not tint the perceived swatch. */
+.viewer-column,.viewer-shell,.preset-image{background:#ededed}
+.viewer-shell:after{display:none}.selection-badge{background:#fff;backdrop-filter:none}
+.render-controls{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 14px;background:#fafafa;border-top:1px solid #d8d8d8;color:#46504a;font-size:11px}
+.render-controls label{display:flex;align-items:center;gap:6px;white-space:nowrap;font-weight:600}.render-controls input{width:15px;height:15px}
+.preset-filter-label{font-size:12px;display:flex;gap:8px;align-items:center}.preset-filter-label select{padding:8px;background:#fff;border:1px solid #cbd2ce;border-radius:6px;color:#293d32;max-width:160px}
+.material-note,.intro p,.micro-note{color:#626e63}.text-btn{color:#536b56}
+@media(max-width:700px){.render-controls{flex-wrap:wrap;font-size:10px}.section-heading{flex-wrap:wrap;gap:12px}.preset-filter-label{font-size:11px}}

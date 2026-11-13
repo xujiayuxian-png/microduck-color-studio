@@ -23,6 +23,7 @@ export function samplePaint(a,p){return sampleCompiled(compileAppearance(a),...p
 // Same continuous world-coordinate paint functions used by the physical renderer.
 export const PAINT_GLSL=`
 uniform vec3 uPaintA,uPaintB,uPaintC,uPartMin,uPartMax;
+uniform float uReference;
 uniform float uPaintType,uTextureType,uPaintAngle,uTextureScale;
 varying vec3 vPaintWorld;
 vec3 studioPaint(vec3 point){

@@ -64,7 +64,19 @@ export function buildPresets(parts){
  list.push(custom('碳纤竞速','碳纤 × 亮面',p=>p.legacyGroup==='guards'?{color:'#303d47',material:'carbon',scale:1.5,roughness:.36,metalness:.4,clearcoat:.6}:{color:p.legacyGroup==='eyes'||p.legacyGroup==='feet'?'#ee5045':'#dce0db',material:'gloss',roughness:.16,clearcoat:1}));
  list.push(custom('云石雕塑','石纹 × 陶瓷',p=>({color:p.legacyGroup==='eyes'?'#bf9762':'#eeeee9',material:p.legacyGroup==='eyes'?'metal':'marble',roughness:.24,metalness:p.legacyGroup==='eyes'?1:.02,scale:1.2})));
  list.push(custom('彩虹漫游','自由色谱',p=>p.section==='head'||p.legacyGroup==='guards'?{paint:'rainbow',material:'gloss',angle:35,roughness:.16,clearcoat:1}:{color:'#edece5'}));
- return list.map((p,i)=>({...p,id:`preset-${i}`}));
+
+ const finishes=[
+ ['珊瑚陶土','clay','#c66e4e','#ead8bc'],['冰川磨砂','frost','#518c9b','#edf4f6'],
+ ['琥珀透明','glass','#ce8c21','#313638'],['红白搪瓷','gloss','#b91c2c','#f8f8f6'],
+ ['香槟丝绸','silk','#bf9950','#34373a'],['深海珠光','pearl','#164c70','#ccdce2'],
+ ['午夜钛金','metal','#7c8188','#e6ad46'],['白橡木作','wood','#bba179','#e8e4dc']
+ ];
+ for(const [name,material,color,accent] of finishes)list.push(custom(name,MATERIALS[material].name,p=>({
+ color:p.legacyGroup==='eyes'||p.legacyGroup==='feet'?accent:color,
+ material:p.legacyGroup==='eyes'||p.legacyGroup==='feet'?'matte':material,
+ ...((p.legacyGroup==='eyes'||p.legacyGroup==='feet')?{roughness:.76,metalness:0,clearcoat:0}:((({roughness,metalness,clearcoat})=>({roughness,metalness,clearcoat}))(MATERIALS[material])))
+ })));
+ return list.map((p,i)=>({...p,id:`preset-${i}`,materials:[...new Set(parts.filter(part=>!part.hardware).map(part=>p.config[part.id].material))]}));
 }
 export function snapshotStudio(config,groups){return {config:cloneConfig(config),groups:groups.map(g=>({...g,ids:[...g.ids]}))};}
 export function restoreStudioSnapshot(snapshot){return snapshotStudio(snapshot.config,snapshot.groups);}
@@ -74,3 +86,5 @@ export function importStudioDocument(data,parts,currentGroups=[]){
  const result=hydrateStudio(data,parts);
  return {config:result.config,groups:Array.isArray(data.groups)?result.groups:currentGroups.map(g=>({...g,ids:[...g.ids]}))};
 }
+
+export function filterPresets(presets,material="all"){return material==="all"?presets:presets.filter(p=>p.materials.includes(material));}
