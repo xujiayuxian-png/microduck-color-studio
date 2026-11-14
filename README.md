@@ -13,7 +13,7 @@ Explore colors, gradients, and materials on the real Micro Duck, one part at a t
 </p>
 
 <p align="center">
-  <a href="https://microduck-color-lab-jx.hollowechidna8.chatgpt.site/">🚀 Try it live</a> ·
+  <a href="https://xujiayuxian-png.github.io/microduck-color-studio/">🚀 Try it live</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
   <a href="#-quick-start">Run locally</a> ·
   <a href="THIRD_PARTY_NOTICES.md">Attribution & licenses</a>
@@ -36,7 +36,7 @@ The same parts, a completely different personality. Mix gradient colors with a s
 
 </details>
 
-Screenshots captured from the live application on 2026-11-12 using its **24-view compatibility renderer**. These are real UI captures, not mockups; WebGL material appearance may differ. Robot geometry and derived views © [Pollen Robotics](https://github.com/pollen-robotics/microduck_rl), [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). See [screenshot provenance](docs/images/README.md).
+Screenshots show the earlier 12-preset interface, before the neutral-lighting and 20-preset update. Captured from the live application on 2026-11-12 using its **24-view compatibility renderer**. These are real UI captures, not mockups; WebGL material appearance may differ. Robot geometry and derived views © [Pollen Robotics](https://github.com/pollen-robotics/microduck_rl), [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). See [screenshot provenance](docs/images/README.md).
 
 ## ✨ Features
 
@@ -45,7 +45,8 @@ Screenshots captured from the live application on 2026-11-12 using its **24-view
 - **Five paint modes.** Solid, two-color linear, three-color, radial, and rainbow gradients, with adjustable stops and direction.
 - **Twelve material looks.** Matte plastic, glossy paint, silk filament, polished and brushed metal, pearl ceramic, wood, marble, carbon fiber, clay, frosted coating, and colored glass. Tune roughness, metalness, clearcoat, and texture scale.
 - **Flexible selections.** Edit a single part, multi-select, use a quick group, or save a named custom group. Batch edits preserve appearance properties you did not change.
-- **Compare and keep ideas.** Explore 12 presets, save up to eight local favorites, compare schemes side by side, undo/redo, and export a PNG appearance sheet or a complete JSON configuration.
+- **Compare and keep ideas.** Explore 20 presets with material filtering, save up to eight local favorites, compare schemes side by side, undo/redo, and export a PNG appearance sheet or a complete JSON configuration.
+- **Color reference mode.** Neutral studio lighting is the default. Toggle color reference mode to remove lighting, reflection, and transparency effects while retaining colors and textures. This checks screen color values, not physical print color accuracy.
 - **Two preview paths.** WebGL2 renders physical materials. A compatibility renderer uses 24 views generated from the same geometry and supports per-part colors, gradients, and procedural textures.
 
 ## 🚀 Quick start
@@ -61,6 +62,8 @@ python3 -m http.server 8080 --bind 127.0.0.1 --directory dist
 Open **http://127.0.0.1:8080/** in your browser. No frontend dependency installation or build step is required. If Node.js is installed, `npm run dev` starts the same Python server.
 
 The complete static application is in `dist/`. Serve that directory over HTTP rather than opening `index.html` as a local file.
+
+The current live demo is hosted on GitHub Pages. The [Pages workflow](.github/workflows/pages.yml) publishes `dist/` when a push to `main` changes `dist/**` or the workflow itself; it can also be started manually. Documentation-only changes do not trigger deployment. The earlier ChatGPT Sites copy is separate and is not synchronized by this workflow.
 
 ## 🎨 A simple workflow
 
@@ -95,7 +98,7 @@ python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -p '*_test.py'
 ```
 
-The initial release passes **18 JavaScript tests and eight Python tests**. They cover independent part editing, configuration migration, gradient and texture sampling, group restoration, history isolation, geometry coordinates, and surface-map assets. Browser checks cover separate face/head colors, independent feet, gradients and materials, favorites, comparison, exports, undo, and mobile layout.
+The 2026-11-13 update passed **21 JavaScript tests and eight Python tests**. They cover independent part editing, configuration migration, gradient and texture sampling, group restoration, history isolation, geometry coordinates, and surface-map assets. Browser checks cover separate face/head colors, independent feet, gradients and materials, favorites, comparison, exports, undo, and mobile layout.
 
 ## 🗂️ Project layout
 

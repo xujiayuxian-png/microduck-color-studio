@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <a href="https://microduck-color-lab-jx.hollowechidna8.chatgpt.site/">🚀 在线体验</a> ·
+  <a href="https://xujiayuxian-png.github.io/microduck-color-studio/">🚀 在线体验</a> ·
   <a href="README.md">English</a> ·
   <a href="#-本地运行">本地运行</a> ·
   <a href="THIRD_PARTY_NOTICES.md">来源与许可</a>
@@ -35,7 +35,7 @@
 
 </details>
 
-截图于 2026-11-12 从实际运行的网页获取，使用 **24 视角兼容渲染器**，不是效果图；WebGL 材质外观可能有所不同。机器人几何及衍生视图 © [Pollen Robotics](https://github.com/pollen-robotics/microduck_rl)，遵循 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)。详见[截图来源说明](docs/images/README.md)。
+截图展示的是中性光照与 20 组预设更新前的旧版界面。截图于 2026-11-12 从实际运行的网页获取，使用 **24 视角兼容渲染器**，不是效果图；WebGL 材质外观可能有所不同。机器人几何及衍生视图 © [Pollen Robotics](https://github.com/pollen-robotics/microduck_rl)，遵循 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)。详见[截图来源说明](docs/images/README.md)。
 
 ## ✨ 功能
 
@@ -44,7 +44,8 @@
 - **渐变**：纯色、双色渐变、三色渐变、径向渐变和彩虹渐变；可分别调整色标和方向。
 - **材质**：哑光塑料、亮面烤漆、丝绸耗材、抛光金属、拉丝金属、珠光陶瓷、木纹、大理石、碳纤维、陶土、磨砂涂层和彩色玻璃，可调整粗糙度、金属感、清漆光泽和纹理尺度。
 - **组合编辑**：单件、多选、快捷组合和自定义命名组合；批量修改只更新所选属性，保留各零件的其他外观设置。
-- **方案管理**：12 组灵感预设、8 个本地收藏、并排比较、撤销与重做、PNG 外观清单以及完整 JSON 方案导出／导入。
+- **方案管理**：20 组灵感预设与材质筛选、8 个本地收藏、并排比较、撤销与重做、PNG 外观清单以及完整 JSON 方案导出／导入。
+- **原色核对**：默认采用中性工作室光照；切换原色核对可移除光照、反射与透明度影响，同时保留颜色和纹理。它用于核对屏幕色值，不代表打印实物校色。
 - **兼容预览**：支持 WebGL2 时使用物理材质；无 WebGL 时使用同一真实几何生成的 24 视角表面图，仍支持逐件渐变与纹理编辑。
 
 ## 🚀 本地运行
@@ -57,7 +58,7 @@ python3 -m http.server 8080 --bind 127.0.0.1 --directory dist
 
 然后打开 `http://127.0.0.1:8080/`。也可以在安装 Node.js 后执行 `npm run dev`，它使用同一条 Python 启动命令。
 
-`dist/` 是完整可运行的静态站点，可以放到你选择的静态服务器。仓库不包含特定托管平台的账号身份或部署配置，也不自动发布网站。
+`dist/` 是完整可运行的静态站点，可以放到你选择的静态服务器。当前在线演示托管于 GitHub Pages；[Pages 工作流](.github/workflows/pages.yml) 会在推送到 `main` 且修改了 `dist/**` 或工作流本身时发布 `dist/`，也支持手动触发。只修改文档不会触发部署。原来的 ChatGPT Sites 副本独立托管，不会由此工作流同步更新。
 
 颜色设置、自定义组合与收藏保存于当前浏览器的 LocalStorage，不上传服务器。可用 JSON 导出保存完整参数，换设备后重新导入。
 
@@ -78,7 +79,7 @@ python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -p '*_test.py'
 ```
 
-当前版本通过 **18 项 JavaScript 测试与 8 项 Python 测试**，覆盖独立零件编辑、旧方案迁移、渐变与纹理采样、组合恢复、深拷贝历史、真实几何坐标一致性及全部表面图数据。
+2026-11-13 的更新通过 **21 项 JavaScript 测试与 8 项 Python 测试**，覆盖独立零件编辑、旧方案迁移、渐变与纹理采样、组合恢复、深拷贝历史、真实几何坐标一致性及全部表面图数据。
 
 浏览器实测包括脸／头壳异色、左右脚独立配色、渐变叠加珠光、组合材质修改、收藏比较与恢复、PNG／JSON 导出、调色盘和撤销，以及手机宽度布局。测试环境未启用 WebGL，因此实际 GPU 材质渲染未完成端到端验证；原生文件选择器的自动化测试也未完成，导入数据处理逻辑已有单元测试。
 
