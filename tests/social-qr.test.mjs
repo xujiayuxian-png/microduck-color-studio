@@ -1,0 +1,3 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
+test('Xiaohongshu QR starts collapsed next to source and uses a native keyboard-accessible disclosure',()=>{assert.match(html,/class="source-link"[\s\S]*?<\/a><details class="social-qr">/);assert.match(html,/<summary[^>]*>小红书/);assert.doesNotMatch(html,/<details class="social-qr"[^>]*\bopen/);assert.match(html,/src="\.\/assets\/xiaohongshu.png"/);assert.match(html,/LISSAGOGOGO/);assert.ok(fs.existsSync(new URL('../dist/assets/xiaohongshu.png',import.meta.url)))});
