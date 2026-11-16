@@ -1,0 +1,3 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
+test('header provides an accessible project source link without replacing model attribution',()=>{assert.match(html,/<header[\s\S]*?<a[^>]*class="[^"]*source-link[^" ]*[^"]*"[^>]*href="https:\/\/github.com\/xujiayuxian-png\/microduck-color-studio"[^>]*>[\s\S]*?GitHub/);assert.match(html,/https:\/\/github.com\/pollen-robotics\/microduck_rl/);assert.match(html,/class="[^"]*source-link[^>]*target="_blank"[^>]*rel="noopener noreferrer"/)});

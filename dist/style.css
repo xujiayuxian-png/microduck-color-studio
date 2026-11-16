@@ -16,3 +16,7 @@
 .preset-filter-label{font-size:12px;display:flex;gap:8px;align-items:center}.preset-filter-label select{padding:8px;background:#fff;border:1px solid #cbd2ce;border-radius:6px;color:#293d32;max-width:160px}
 .material-note,.intro p,.micro-note{color:#626e63}.text-btn{color:#536b56}
 @media(max-width:700px){.render-controls{flex-wrap:wrap;font-size:10px}.section-heading{flex-wrap:wrap;gap:12px}.preset-filter-label{font-size:11px}}
+
+/* Project source stays visible without competing with the editing actions. */
+.source-link{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:6px 9px;font-size:12px;font-weight:550;color:#4f6558;border:1px solid transparent;border-radius:6px;white-space:nowrap}.source-link:hover{background:#edf1e6;border-color:#dbe1d3}.source-link:focus-visible{outline:2px solid #39614c;outline-offset:3px}
+@media(max-width:700px){.topbar{height:auto;min-height:77px;flex-wrap:wrap;gap:12px;padding-top:14px;padding-bottom:14px}.header-actions{flex-wrap:wrap;gap:7px}.source-link{padding:6px;font-size:11px;min-height:36px}}
